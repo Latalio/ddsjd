@@ -29,20 +29,22 @@ var render = Render.create({
     options: {
         width: 1080,
         height: 1080,
-        background: '#FFFFFF',
-        wireframes: false,
+        background: '#FF0FFF',
+        // wireframes: false,
+        showInternalEdge: false,
+        showPositions: true
       }
 });
 
 // paramters
-var xCenter = window.innerWidth/2;
-var yCenter = window.innerHeight/2;
+var xCenter = 1080/2;
+var yCenter = 1080/2;
 
 var SPEED = 2.99;
 
 // create wall
-var upperHeight = 180;
-var radius = 180;
+var upperHeight = 250;
+var radius = 250;
 var numInterval = 100;
 var interval = 4*radius / numInterval;
 var xx = new Array(numInterval+1);
@@ -73,10 +75,10 @@ for (var i=0;i<xx.length;i++) {
 
 //// Emitter
 class Emitter {
-    constructor(r=10, inter = 2000) {
+    constructor(r=14, inter = 2000) {
         var _this = this;
-        this.x = window.innerWidth/2; 
-        this.y = window.innerHeight/2;
+        this.x = xCenter; 
+        this.y = 340;
         this.r = r;
         this.inter = inter;
         this.start = function (speed) {
@@ -87,7 +89,7 @@ class Emitter {
                     restitution: 1,
                     render: {
                         // fillStyle: '#EE3F4D'
-                        strokeStyle: '#FFFFFF',
+                        strokeStyle: '#0FFFFF',
                         sprite: {
                             texture: 'texture.png'
                         }
@@ -108,18 +110,18 @@ var emitter = new Emitter();
 emitter.start(SPEED);
 
 
-var ubody = Bodies.fromVertices(xCenter, 0, upoints, 
+var ubody = Bodies.fromVertices(xCenter, 84, upoints, 
     {
         density:0,
         frictionStatic:0,
         isStatic:true, 
         restitution:1,
         render:{
-            fillStyle: '#FFFFFF'
+            fillStyle: '#0FFFFF'
         }
     },
     true);
-var lbody = Bodies.fromVertices(xCenter+8, 442, lpoints, 
+var lbody = Bodies.fromVertices(xCenter+12, 700, lpoints, 
     {
         density:0,
         frictionStatic:0,
@@ -148,18 +150,15 @@ Events.on(engine, 'collisionEnd', function(event) {
     }
 });
 
-Events.on(engine, 'beforeRender', function(event){
-    console.log(event.name)
+Events.on(render, 'afterRender', function(event){
+    var canvasData = render.canvas.toDataURL("image/png");
+    var ajax = new XMLHttpRequest();
+    ajax.open("POST",'sever.php',false);
+    ajax.setRequestHeader('Content-Type', 'text/plain');
+    ajax.send(canvasData);
 })
 
-Events.on(engine, 'afterRender', function(event) {
 
-    for (var i=0;i<3;i++) {
-        console.log(event.name)
-        console.log(event.timestamp)
-        console.log(event.source)
-    }
-})
 
 
 
